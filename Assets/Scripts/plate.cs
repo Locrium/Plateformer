@@ -35,17 +35,6 @@ public class Plate : MonoBehaviour
     
     public bool landed = false;
 
-    float landingLerpValue = 0.9f; // between 0 and 1. Defines how quickly the velocity comes to a stop. - DEPRICATED
-    // Once the plate's hitbox touches wall/ground it will slowly come to a stop through lerping. That way it will be buried a certain amount into
-    // the wall. 
-    // TODO: There is a bug (more of a limitation) where if the launch velocity is too high, then it will travel into the wall a little too much.
-    // this can be fixed in a variety of ways. Here are some possibilities:
-    // - 1: Lerping isn't really necessary at such high speeds. Just make it stop a set amount of game ticks after hitting the wall
-    // - 2: Make the hitbox of the plate extend forwards a bit, so that it gets a head start on detecting the wall and slowing down.
-
-    float frozenMovementThreshold = 0.5f;
-    // used to stop the plate when it is moving slow enough that it's not really moving anymore. (gravity + lerp stuff will keep it very gently oozing down otherwise)
-
     Quaternion initialRotation;
 
     bool stopped = false;
@@ -104,7 +93,7 @@ public class Plate : MonoBehaviour
 
         if (landed)
         {
-            slowToStop();
+            Stop();
         }
 
         if (!landed) 
@@ -141,28 +130,14 @@ public class Plate : MonoBehaviour
 
         //transform.rotation = Quaternion.Euler(newRotation, 0, 0);
 
-
-
-
     }
 
-    void slowToStop()
+    void Stop()
     // I guess this could also be done by changing the amount of friction, but that is scary. Easily changable though
     {
-        if (!stopped)
-        {
-            rb.isKinematic = true;
-            //StartCoroutine(StopInstantly());
-            //rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, Vector3.zero, landingLerpValue);
-        }
-        if (rb.linearVelocity.x < frozenMovementThreshold && rb.linearVelocity.y < frozenMovementThreshold && rb.linearVelocity.z < frozenMovementThreshold)
-            // must be && because || will be triggered by Y velocity during throw
-            // this is a vestige of when I was lerping to slow stuff down. No longer
-        {
-            rb.isKinematic = true;
-            stopped = true;
-            // stopped just stops lerping which spams warnings lol
-        }
+
+        StartCoroutine(StopInstantly());
+          rb.isKinematic = true;
 
     }
 
