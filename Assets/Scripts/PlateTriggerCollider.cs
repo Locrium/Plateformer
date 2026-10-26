@@ -20,6 +20,7 @@ public class PlateTriggerCollider : MonoBehaviour
         {
             plate.landed = true;
             Debug.Log("stopping plate!");
+            plate.Stop();
         }
     }
 

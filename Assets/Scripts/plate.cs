@@ -1,5 +1,7 @@
 using System.Collections;
 using System.IO;
+using FMOD.Studio;
+using FMODUnity;
 using NUnit.Framework.Internal.Commands;
 using UnityEngine;
 
@@ -41,6 +43,17 @@ public class Plate : MonoBehaviour
 
     bool stopped = false;
 
+    [Header("Audio")]
+
+    string plateLaunchPath = "event:/plate_launch_1";
+    EventInstance launchAudio;
+
+    string plateStickPath = "event:/plate_stick_1";
+    EventInstance stickAudio;
+
+    string plateBreakPath = "event:/plate_break_1";
+    EventInstance breakAudio;
+
 
     [Header("Debug")]
     float gizmoRayLength = 3f;
@@ -68,8 +81,23 @@ public class Plate : MonoBehaviour
         // player's cardinal direction by each offset value means that the rotation is taken into account. I'm sure there's a smoother way to do this... -J
 
         initialRotation = transform.rotation;
+        
+        LoadAudio();
 
         LaunchPlate();
+
+    }
+
+    void LoadAudio()
+    {
+        launchAudio = RuntimeManager.CreateInstance(plateLaunchPath);
+        RuntimeManager.AttachInstanceToGameObject(launchAudio, gameObject);
+
+        stickAudio = RuntimeManager.CreateInstance(plateStickPath);
+        RuntimeManager.AttachInstanceToGameObject(stickAudio, gameObject);
+
+        breakAudio = RuntimeManager.CreateInstance(plateBreakPath);
+        RuntimeManager.AttachInstanceToGameObject(breakAudio, gameObject);
 
     }
 
@@ -86,17 +114,13 @@ public class Plate : MonoBehaviour
 
         rb.AddForce(transform.forward * initialSpeed, ForceMode.Impulse);
         //Debug.Log("Applying impulse? Impulse direciton given is" + Vector3.forward * initialSpeed);
+        launchAudio.start();
 
     }
 
     private void FixedUpdate()
     {
         applyGravity();
-
-        if (landed)
-        {
-            Stop();
-        }
 
         if (!landed) 
         {
@@ -134,12 +158,14 @@ public class Plate : MonoBehaviour
 
     }
 
-    void Stop()
+    public void Stop()
     // I guess this could also be done by changing the amount of friction, but that is scary. Easily changable though
+    // Called by PlateTriggerCollider
     {
 
         //StartCoroutine(StopAfter1Tick());
-          rb.isKinematic = true;
+        rb.isKinematic = true;
+        stickAudio.start();
 
     }
 
@@ -148,6 +174,7 @@ public class Plate : MonoBehaviour
     void BreakPlate()
     {
         GameObject.Destroy(gameObject);
+        breakAudio.start();
     }
 
     IEnumerator StopAfter1Tick()

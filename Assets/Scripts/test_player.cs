@@ -1,3 +1,6 @@
+using System.Collections;
+using FMOD.Studio;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,16 +14,22 @@ public class test_player : MonoBehaviour
     [SerializeField] GameObject platePrefab;
     GameObject plateInstance;
 
-    Vector3 offset = new Vector3(0.5f, -0.5f, 2);
-    // offset the plate's launch location so it isn't coming right out of the player's face
+    string plateLaunchPath = "event:/plate_launch_1";
 
-
-
+    EventInstance launchAudio;
 
 
     void Start()
     {
-        //platePrefab = Resources.Load<GameObject>(platePrefabPath);
+        //StartCoroutine(LoadAudio());
+    }
+
+    IEnumerator LoadAudio()
+    {
+        yield return new WaitUntil(() => RuntimeManager.HaveAllBanksLoaded);
+        launchAudio = RuntimeManager.CreateInstance(plateLaunchPath);
+
+
     }
 
     // Update is called once per frame

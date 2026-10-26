@@ -1,5 +1,23 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7957289330842243999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/SFX.bank
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorBankRef
+  Path: FMOD/Desktop/SFX.bank
+  Name: SFX
+  StudioPath: bank:/SFX
+  lastModified: 639285685646058788
+  FileSizes: []
+  Exists: 1
 --- !u!114 &-7728441892480401172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15,11 +33,65 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639285387743009546
+  lastModified: 639285685645854703
   FileSizes:
   - Name: 
-    Value: 724
+    Value: 910
   Exists: 1
+--- !u!114 &-3840740322202629917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/plate_stick_1
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/plate_stick_1
+  Guid:
+    Data1: 991104621
+    Data2: 1267155748
+    Data3: -1573083497
+    Data4: -240006312
+  Banks:
+  - {fileID: -7957289330842243999}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 133
+--- !u!114 &-2386563986356847545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/plate_break_1
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/plate_break_1
+  Guid:
+    Data1: 1949761339
+    Data2: 1075835051
+    Data3: 1381441691
+    Data4: -1778911568
+  Banks:
+  - {fileID: -7957289330842243999}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 619
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35,15 +107,25 @@ MonoBehaviour:
   EditorBanks:
   - {fileID: -7728441892480401172}
   - {fileID: 1962292550549392434}
-  EditorEvents: []
+  - {fileID: -7957289330842243999}
+  EditorEvents:
+  - {fileID: -2386563986356847545}
+  - {fileID: -3840740322202629917}
+  - {fileID: 5108424866805324314}
   EditorParameters: []
   MasterBanks:
   - {fileID: 1962292550549392434}
   StringsBanks:
   - {fileID: -7728441892480401172}
   cacheVersion: 131861
-  cacheTime: 639285387743009546
-  SerializableEventsDict: []
+  cacheTime: 639285685646058788
+  SerializableEventsDict:
+  - key: event:/plate_break_1
+    index: 0
+  - key: event:/plate_stick_1
+    index: 1
+  - key: event:/plate_launch_1
+    index: 2
 --- !u!114 &1962292550549392434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,6 +141,33 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639285387742986891
+  lastModified: 639285685645841978
   FileSizes: []
   Exists: 1
+--- !u!114 &5108424866805324314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/plate_launch_1
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/plate_launch_1
+  Guid:
+    Data1: 2014608249
+    Data2: 1304261908
+    Data3: 1609044382
+    Data4: 1672308285
+  Banks:
+  - {fileID: -7957289330842243999}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 860
