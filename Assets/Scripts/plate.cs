@@ -2,7 +2,7 @@ using System.IO;
 using NUnit.Framework.Internal.Commands;
 using UnityEngine;
 
-public class plate : MonoBehaviour
+public class Plate : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
@@ -12,6 +12,7 @@ public class plate : MonoBehaviour
     // main camera (player orientation)
 
     Rigidbody rb;
+
 
     [Header("Values")]
     float initialSpeed = 6f;
@@ -29,7 +30,7 @@ public class plate : MonoBehaviour
 
     [Header("Collision and Stopping")]
     
-    bool landed = false;
+    public bool landed = false;
 
     float landingLerpValue = 0.75f; // between 0 and 1. Defines how quickly the velocity comes to a stop.
     // Once the plate's hitbox touches wall/ground it will slowly come to a stop through lerping. That way it will be buried a certain amount into
@@ -92,14 +93,7 @@ public class plate : MonoBehaviour
     }
 
 
-    private void OnTriggerEnter(Collider other)
-    {
-        // TODO: Match layers with tag (ground isn't built yet so I'm not doing that yet)
-        // right now it will interact with any other hitbox (including other plates)
-
-        landed = true;
-
-    }
+    
 
     private void FixedUpdate()
     {
@@ -112,9 +106,7 @@ public class plate : MonoBehaviour
 
         if (!landed) 
         {
-
         RotateWithVelocity();
-
         }
     }
 
@@ -125,7 +117,7 @@ public class plate : MonoBehaviour
     {
         transform.rotation = Quaternion.LookRotation(rb.linearVelocity);
 
-        // I'm leaving my horrid attempt at what Jonathan found out could just be one line down here 
+        // I'm leaving my horrid attempt at what Jonathan found out could just be one line down here as punishment
 
         //float velocityVector = Mathf.Atan(rb.linearVelocity.y / rb.linearVelocity.z);
 
@@ -162,8 +154,8 @@ public class plate : MonoBehaviour
             // must be && because || will be triggered by Y velocity during throw
         {
             rb.isKinematic = true;
-            Debug.Log("freezing movement");
             stopped = true;
+            // stopped just stops lerping which spams warnings lol
         }
 
     }

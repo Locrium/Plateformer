@@ -2,15 +2,30 @@ using UnityEngine;
 
 public class PlateTriggerCollider : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    [SerializeField] Plate plate;
+
+    [SerializeField] LayerMask layerMask;
+
     void Start()
     {
         
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        // TODO: Match layers with tag (ground isn't built yet so I'm not doing that yet)
+        // right now it will interact with any other hitbox (including other plates)
 
-    // Update is called once per frame
+        if (((layerMask & (1 << other.gameObject.layer)) != 0))
+        {
+            plate.landed = true;
+            Debug.Log("stopping plate!");
+        }
+    }
+
     void Update()
     {
         
     }
 }
+
