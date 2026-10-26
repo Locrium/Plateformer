@@ -91,13 +91,10 @@ public class Plate : MonoBehaviour
     void LoadAudio()
     {
         launchAudio = RuntimeManager.CreateInstance(plateLaunchPath);
-        RuntimeManager.AttachInstanceToGameObject(launchAudio, gameObject);
 
         stickAudio = RuntimeManager.CreateInstance(plateStickPath);
-        RuntimeManager.AttachInstanceToGameObject(stickAudio, gameObject);
 
         breakAudio = RuntimeManager.CreateInstance(plateBreakPath);
-        RuntimeManager.AttachInstanceToGameObject(breakAudio, gameObject);
 
     }
 
@@ -114,6 +111,8 @@ public class Plate : MonoBehaviour
 
         rb.AddForce(transform.forward * initialSpeed, ForceMode.Impulse);
         //Debug.Log("Applying impulse? Impulse direciton given is" + Vector3.forward * initialSpeed);
+
+        RuntimeManager.AttachInstanceToGameObject(launchAudio, gameObject);// best practice to do this right before playing the audio
         launchAudio.start();
 
     }
@@ -126,6 +125,7 @@ public class Plate : MonoBehaviour
         {
         RotateWithVelocity();
         }
+        
     }
 
      void RotateWithVelocity()
@@ -158,14 +158,17 @@ public class Plate : MonoBehaviour
 
     }
 
-    public void Stop()
+    public void StopPlate()
     // I guess this could also be done by changing the amount of friction, but that is scary. Easily changable though
     // Called by PlateTriggerCollider
     {
 
         //StartCoroutine(StopAfter1Tick());
         rb.isKinematic = true;
+        RuntimeManager.AttachInstanceToGameObject(stickAudio, gameObject); // best practice to do this right before playing the audio
         stickAudio.start();
+
+
 
     }
 
@@ -174,6 +177,7 @@ public class Plate : MonoBehaviour
     void BreakPlate()
     {
         GameObject.Destroy(gameObject);
+        RuntimeManager.AttachInstanceToGameObject(breakAudio, gameObject);
         breakAudio.start();
     }
 
