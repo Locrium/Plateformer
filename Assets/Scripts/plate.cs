@@ -18,9 +18,11 @@ public class Plate : MonoBehaviour
 
 
     [Header("Values")]
-    float initialSpeed = 10f;
+    float initialSpeed = 12f;
     // Amount of impulse force added to propel plate 
     // (how hard it is thrown)
+    // Note: At very high speeds, the plate sinks too far into the wall. It will need some troubleshooting to make sure it doesnt sink too far.
+    // like maybe a hitbox in front of the plate, or 
     
     Vector3 offset = new Vector3 (0.5f, -0.5f, 2);
     // offset the launch location so it isn't coming right out of the player's face
@@ -79,7 +81,7 @@ public class Plate : MonoBehaviour
         meshRenderer.enabled = true;
     }
 
-    public void LaunchPlate()
+     void LaunchPlate()
     {
 
         rb.AddForce(transform.forward * initialSpeed, ForceMode.Impulse);
@@ -102,7 +104,7 @@ public class Plate : MonoBehaviour
         }
     }
 
-    public void RotateWithVelocity()
+     void RotateWithVelocity()
         // I want plate to rise and fall like a frisbee. Right now it's angle is always the same. not so cool\
         // I don't want it to look like it's pointing too low, so I will clamp the angle on the way down.
         // a better way would be to lerp it towards 0 maybe?
@@ -136,12 +138,19 @@ public class Plate : MonoBehaviour
     // I guess this could also be done by changing the amount of friction, but that is scary. Easily changable though
     {
 
-        StartCoroutine(StopInstantly());
+        //StartCoroutine(StopAfter1Tick());
           rb.isKinematic = true;
 
     }
 
-    IEnumerator StopInstantly()
+
+    [ContextMenu("Break Plate")]
+    void BreakPlate()
+    {
+        GameObject.Destroy(gameObject);
+    }
+
+    IEnumerator StopAfter1Tick()
         // stops after 1 fixedupdate. So not instantly lol
     {
         yield return new WaitForFixedUpdate();
@@ -160,10 +169,4 @@ public class Plate : MonoBehaviour
 
     }
 
-
-    private void OnDrawGizmosSelected()
-    {
-        //Gizmos.color = Color.yellow;
-        //Gizmos.DrawRay(gizmoRayLength);
-    }
 }
