@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class test_player : MonoBehaviour
 {
@@ -6,6 +7,10 @@ public class test_player : MonoBehaviour
     [SerializeField] GameObject platePrefab;
     //string platePrefabPath = "Prefabs/Plate Version 1";
     GameObject plateInstance;
+
+
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,6 +27,15 @@ public class test_player : MonoBehaviour
     void SpawnPlate()
     {
         plateInstance = Instantiate(platePrefab);
+    }
+
+    public void Fire(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            SpawnPlate();
+        }
+        
     }
 
 }
