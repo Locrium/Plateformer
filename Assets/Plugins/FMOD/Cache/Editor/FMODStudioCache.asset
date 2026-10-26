@@ -15,7 +15,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639285704649288525
+  lastModified: 639285723470157812
   FileSizes: []
   Exists: 1
 --- !u!114 &-7728441892480401172
@@ -118,7 +118,7 @@ MonoBehaviour:
   StringsBanks:
   - {fileID: -7728441892480401172}
   cacheVersion: 131861
-  cacheTime: 639285704649288525
+  cacheTime: 639285723470157812
   SerializableEventsDict:
   - key: event:/plate_break_1
     index: 0
