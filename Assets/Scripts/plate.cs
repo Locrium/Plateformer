@@ -1,3 +1,4 @@
+using System.Collections;
 using System.IO;
 using NUnit.Framework.Internal.Commands;
 using UnityEngine;
@@ -13,33 +14,37 @@ public class Plate : MonoBehaviour
 
     Rigidbody rb;
 
+    MeshRenderer meshRenderer;
+
 
     [Header("Values")]
-    float initialSpeed = 6f;
+    float initialSpeed = 10f;
     // Amount of impulse force added to propel plate 
     // (how hard it is thrown)
     
     Vector3 offset = new Vector3 (0.5f, -0.5f, 2);
     // offset the launch location so it isn't coming right out of the player's face
 
-    float gravityScale = 0.1f;
+    float gravityScale = 0.2f;
     // Don't want it to drop super quickly, so I'm modifying the gravity scale
 
-    float dragScale = 0f;
+    float dragScale = 0.255f;
     // how much air drag there is (I think there should be 0)
 
     [Header("Collision and Stopping")]
     
     public bool landed = false;
 
-    float landingLerpValue = 0.75f; // between 0 and 1. Defines how quickly the velocity comes to a stop.
+    float landingLerpValue = 0.9f; // between 0 and 1. Defines how quickly the velocity comes to a stop. - DEPRICATED
     // Once the plate's hitbox touches wall/ground it will slowly come to a stop through lerping. That way it will be buried a certain amount into
     // the wall. 
+    // TODO: There is a bug (more of a limitation) where if the launch velocity is too high, then it will travel into the wall a little too much.
+    // this can be fixed in a variety of ways. Here are some possibilities:
+    // - 1: Lerping isn't really necessary at such high speeds. Just make it stop a set amount of game ticks after hitting the wall
+    // - 2: Make the hitbox of the plate extend forwards a bit, so that it gets a head start on detecting the wall and slowing down.
 
-    float frozenMovementThreshold = 0.6f;
+    float frozenMovementThreshold = 0.5f;
     // used to stop the plate when it is moving slow enough that it's not really moving anymore. (gravity + lerp stuff will keep it very gently oozing down otherwise)
-
-    float pitchingLerpValue= 0.9f;
 
     Quaternion initialRotation;
 
@@ -52,13 +57,17 @@ public class Plate : MonoBehaviour
 
     void Start()
     {
+        meshRenderer = GetComponent<MeshRenderer>();
+        meshRenderer.enabled = false;
+
+        StartCoroutine(LightsOn());
+
         camera = FindAnyObjectByType<Camera>();
         // must be only one camera
 
         rb = GetComponent<Rigidbody>();
 
         rb.linearDamping = dragScale;
-
 
         transform.rotation = camera.transform.rotation;
 
@@ -69,15 +78,18 @@ public class Plate : MonoBehaviour
 
         initialRotation = transform.rotation;
 
-        Debug.Log("Camera rotation is: " + camera.transform.rotation + " and Plate rotation is: " + transform.rotation);
-        Debug.Log("Camera position is: " + camera.transform.position + " and Plate position is: " + transform.position);
-
-        //pushes plate forward a bit so that there's no collision issues
-
         LaunchPlate();
+
     }
 
-    [ContextMenu("Launch?")]
+    IEnumerator LightsOn()
+    {
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
+
+        meshRenderer.enabled = true;
+    }
+
     public void LaunchPlate()
     {
 
@@ -85,15 +97,6 @@ public class Plate : MonoBehaviour
         //Debug.Log("Applying impulse? Impulse direciton given is" + Vector3.forward * initialSpeed);
 
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
-    
 
     private void FixedUpdate()
     {
@@ -110,7 +113,7 @@ public class Plate : MonoBehaviour
         }
     }
 
-    void RotateWithVelocity()
+    public void RotateWithVelocity()
         // I want plate to rise and fall like a frisbee. Right now it's angle is always the same. not so cool\
         // I don't want it to look like it's pointing too low, so I will clamp the angle on the way down.
         // a better way would be to lerp it towards 0 maybe?
@@ -148,15 +151,27 @@ public class Plate : MonoBehaviour
     {
         if (!stopped)
         {
-            rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, Vector3.zero, landingLerpValue);
+            rb.isKinematic = true;
+            //StartCoroutine(StopInstantly());
+            //rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, Vector3.zero, landingLerpValue);
         }
         if (rb.linearVelocity.x < frozenMovementThreshold && rb.linearVelocity.y < frozenMovementThreshold && rb.linearVelocity.z < frozenMovementThreshold)
             // must be && because || will be triggered by Y velocity during throw
+            // this is a vestige of when I was lerping to slow stuff down. No longer
         {
             rb.isKinematic = true;
             stopped = true;
             // stopped just stops lerping which spams warnings lol
         }
+
+    }
+
+    IEnumerator StopInstantly()
+        // stops after 1 fixedupdate. So not instantly lol
+    {
+        yield return new WaitForFixedUpdate();
+
+        rb.isKinematic = true;
 
     }
 
