@@ -18,3 +18,6 @@
 *.wav binary
 *.mp3 binary
 *.ogg binary
+
+# Preserve line endings in platform-specific FMOD files
+[Aa]ssets/Plugins/FMOD/platforms/mac/**/*.plist text eol=lf

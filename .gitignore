@@ -57,3 +57,8 @@ Desktop.ini
 !.env.example
 *.keystore
 *.jks
+
+# FMOD files
+**/FMODStudioCache.asset
+Assets/StreamingAssets/*.bank
+fmod_editor.log
