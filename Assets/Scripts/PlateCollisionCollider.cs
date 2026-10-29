@@ -30,4 +30,10 @@ public class PlateCollisionCollider : MonoBehaviour
     {
         
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        plate.EmbedPlate();
+        Debug.Log("plate shouild stop?");
+    }
 }

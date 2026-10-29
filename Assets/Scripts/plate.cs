@@ -7,7 +7,15 @@ using UnityEngine;
 
 public class Plate : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
+    // READ ME:
+    // ok so this script will work for both plate versions (as of oct 28), but not all methods will be used in either.
+    // Plate version 1 has hitbox problems with its child hitboxes. Because the parent has a rigidbody, they seem to
+    // have weird interactions with objects (delayed, or sometimes absent reactions). This is why I opted to change my strategy. 
+    // Version 2 pushes the plate into the wall slightly, in the direction it was going once the collision hitbox hits the 
+    // wall. This is more reliable and doesn't use children. I don't see it breaking, but then landing angle isn't quite right, because 
+    // when it's pushed into the wall, it can only push in the direction it's facing/has been going, but can't continue the arc down. 
+    // it's still lowkey good enough though. Fixable later (I have other ideas lol)
 
 
     [Header("References")]
@@ -39,9 +47,16 @@ public class Plate : MonoBehaviour
     
     public bool landed = false;
 
-    Quaternion initialRotation;
-
     bool stopped = false;
+
+    float pushAmt = 0.2f;
+    // how far the plate gets pushed into the wall
+
+    [SerializeField] LayerMask ignoredLayers;
+
+    [SerializeField] LayerMask ignoredLayersOnlyInFlight;
+    // this is for ignoring the player while the plate is being thrown. Once the plate is landed, 
+    // layers assigned to this will then no longer be ignored.
 
     [Header("Audio")]
 
@@ -78,16 +93,51 @@ public class Plate : MonoBehaviour
         transform.position = camera.transform.position + 
             (camera.transform.right * offset.x) + (camera.transform.up * offset.y) + (camera.transform.forward * offset.z);
         // I know this is a mess, but just adding a vector3 makes it so the vector 3 is in the world space, and not rotated to the player. Multiplying each 
-        // player's cardinal direction by each offset value means that the rotation is taken into account. I'm sure there's a smoother way to do this... -J
+        // player's cardinal direction by each offset value means that the rotation is taken into account. I'm sure there's a smoother way to do this... -J        
 
-        initialRotation = transform.rotation;
-        
+        BuildHitboxIgnoreList();
+
         LoadAudio();
 
         LaunchPlate();
 
     }
 
+    void BuildHitboxIgnoreList ()
+    {
+        for (int i = 0; i < 32; ++i)
+
+        {
+            // going through each bit of ANY layermask using 10 digit numerals (count up to 31)
+
+            if ((ignoredLayers & (1 << i)) != 0) // bit shift I over cuz weird fencepost thing I can't understand yet
+            // if i is within layers
+            {
+                Physics.IgnoreLayerCollision(gameObject.layer, i);
+                // Physics.IgnoreLayerCollision does NOT require bit shifting because of course, it makes so much sense!! :D
+            }
+
+            
+                // ok now for these
+            {
+                Physics.IgnoreLayerCollision(gameObject.layer, i);
+            }
+
+        }
+    }
+
+    void UnIgnoreInFlightLayers()
+    {
+        for (int i = 0; i < 32; ++i)
+
+        {
+            if ((ignoredLayersOnlyInFlight & (1 << i)) != 0)
+            {
+                Physics.IgnoreLayerCollision(gameObject.layer, i, false);
+            }
+        }
+
+    }
     void LoadAudio()
     {
         launchAudio = RuntimeManager.CreateInstance(plateLaunchPath);
@@ -129,32 +179,12 @@ public class Plate : MonoBehaviour
     }
 
      void RotateWithVelocity()
-        // I want plate to rise and fall like a frisbee. Right now it's angle is always the same. not so cool\
-        // I don't want it to look like it's pointing too low, so I will clamp the angle on the way down.
-        // a better way would be to lerp it towards 0 maybe?
+        // Plate will always face the direction its going!
+  
     {
         transform.rotation = Quaternion.LookRotation(rb.linearVelocity);
 
-        // I'm leaving my horrid attempt at what Jonathan found out could just be one line down here as punishment
 
-        //float velocityVector = Mathf.Atan(rb.linearVelocity.y / rb.linearVelocity.z);
-
-        //Debug.Log("velocity Vector = " + velocityVector);
-
-        //float newRotation = Mathf.SmoothStep(-initialSpeed, initialSpeed, velocityVector);
-        //// value between 0 and 1
-
-        //Debug.Log("newRotation pre adjustments: " +  newRotation);
-
-        //newRotation = (newRotation * 2) -1;
-        //// make it a value between 1 and -1
-
-        //newRotation *= 90;
-        //// now it will be straight up/straight down based off of vertical and horizontal velocity mix
-
-        //Debug.Log("x angle should be: " + newRotation);
-
-        //transform.rotation = Quaternion.Euler(newRotation, 0, 0);
 
     }
 
@@ -168,8 +198,23 @@ public class Plate : MonoBehaviour
         RuntimeManager.AttachInstanceToGameObject(stickAudio, gameObject); // best practice to do this right before playing the audio
         stickAudio.start();
 
+    }
 
+    public void EmbedPlate()
+    {
+        RotateWithVelocity();
+        rb.isKinematic = true;
+        landed = true;
+        transform.position += transform.forward * pushAmt;
+         
+    }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        EmbedPlate();
+
+        UnIgnoreInFlightLayers();
+        // player will now be able to jump on the plate
     }
 
 
@@ -182,7 +227,7 @@ public class Plate : MonoBehaviour
     }
 
     IEnumerator StopAfter1Tick()
-        // stops after 1 fixedupdate. So not instantly lol
+        // stops after 1 fixedupdate.
     {
         yield return new WaitForFixedUpdate();
 
@@ -192,7 +237,7 @@ public class Plate : MonoBehaviour
 
     void applyGravity()
     // constantly applies gravity to the plate object. Gravity is disabled under the rigidbody settings
-    // in inspector, so this is a modifyable substitute (no native way to change rigidbody gravity per instance in 3d - only 2d)
+    // in inspector, so this is a modifiable substitute (no native way to change rigidbody gravity per object in 3d - only 2d)
     {
 
         rb.AddForce(Vector3.up * Physics.gravity.y * gravityScale, ForceMode.Acceleration);

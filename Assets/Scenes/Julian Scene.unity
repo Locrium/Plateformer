@@ -1034,7 +1034,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70bf37a6cf0c9e144a5fe1b7c53d0927, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  platePrefab: {fileID: 7087272054508925747, guid: 70ce9660e126e4a4d85020cf28b2e687, type: 3}
+  platePrefab: {fileID: 7087272054508925747, guid: 7f31654d51bdbf148ae6362ce3864266, type: 3}
 --- !u!114 &1262020314
 MonoBehaviour:
   m_ObjectHideFlags: 0
