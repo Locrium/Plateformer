@@ -35,7 +35,6 @@ public class PlatePlayerCollider : MonoBehaviour
     {
         transform.position = plate.transform.position;
 
-
     }
 
     private void OnCollisionEnter(Collision other)

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4123218481138058438}
   - component: {fileID: 5943668637629226361}
   - component: {fileID: 7902304731376808015}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Plate Main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,13 +132,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ff6f004cdbda5a479ce4227c39cf571, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  plateCollider: {fileID: 3520751240589518379}
   landed: 0
   ignoredLayers:
     serializedVersion: 2
     m_Bits: 512
   ignoredLayersOnlyInFlight:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
+  layersPlateCanLandOn:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &5164213526655787109
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,7 +154,7 @@ GameObject:
   - component: {fileID: 5132048495314998250}
   - component: {fileID: 9018514155802551263}
   - component: {fileID: 3520751240589518379}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: GroundCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,7 +213,7 @@ MonoBehaviour:
   plate: {fileID: 7902304731376808015}
   interactableLayers:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
 --- !u!1 &7304510219743073164
 GameObject:
   m_ObjectHideFlags: 0

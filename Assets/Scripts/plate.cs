@@ -9,13 +9,7 @@ public class Plate : MonoBehaviour
 {
     
     // READ ME:
-    // ok so this script will work for both plate versions (as of oct 28), but not all methods will be used in either.
-    // Plate version 1 has hitbox problems with its child hitboxes. Because the parent has a rigidbody, they seem to
-    // have weird interactions with objects (delayed, or sometimes absent reactions). This is why I opted to change my strategy. 
-    // Version 2 pushes the plate into the wall slightly, in the direction it was going once the collision hitbox hits the 
-    // wall. This is more reliable and doesn't use children. I don't see it breaking, but then landing angle isn't quite right, because 
-    // when it's pushed into the wall, it can only push in the direction it's facing/has been going, but can't continue the arc down. 
-    // it's still lowkey good enough though. Fixable later (I have other ideas lol)
+    // plate will only work for plate version 4. Fuck it all. FUck!
 
 
     [Header("References")]
@@ -27,13 +21,14 @@ public class Plate : MonoBehaviour
 
     MeshRenderer meshRenderer;
 
+    [SerializeField] PlateGroundCollider plateCollider;
+    // the hitbox. We will need to resize it, but it will work just like a component. Can even
+    // trigger OnCollisionEnter way up here in the parent!
 
     [Header("Values")]
     float initialSpeed = 12f;
     // Amount of impulse force added to propel plate 
     // (how hard it is thrown)
-    // Note: At very high speeds, the plate sinks too far into the wall. It will need some troubleshooting to make sure it doesnt sink too far.
-    // like maybe a hitbox in front of the plate, or 
     
     Vector3 offset = new Vector3 (0.5f, -0.5f, 2);
     // offset the launch location so it isn't coming right out of the player's face
@@ -42,24 +37,31 @@ public class Plate : MonoBehaviour
     // Don't want it to drop super quickly, so I'm modifying the gravity scale
 
     float dragScale = 0.255f;
-    // how much air drag there is (I think there should be 0)
+    // how much air drag there is (probably best for it to be a low number)
 
     [Header("Collision and Stopping")]
     
     public bool landed = false;
 
-    bool stopped = false;
-
     float pushAmt = 0.2f;
     // how far the plate gets pushed into the wall
 
+    float sinkAmt = 0.2f;
+    // this will determine how much to shrink the hitbox, and therefore how far
+    // the plate sinks into the wall. 
+    // NOTE: Must be between 0 and 1. 0 is sinking halway through, and 1 is not sinking at all.
+
     [SerializeField] LayerMask ignoredLayers;
+    // completely ignored layers (BLACKLIST)
 
     [SerializeField] LayerMask ignoredLayersOnlyInFlight;
     // this is for ignoring the player while the plate is being thrown. Once the plate is landed, 
     // layers assigned to this will then no longer be ignored.
+    // (BLACKLIST)
 
-    [SerializeField] LayerMask interactableLayers;
+    [SerializeField] LayerMask layersPlateCanLandOn;
+    // used only for landing. Player interaction should not use this (when implemented)
+    // (WHITELIST)
 
     [Header("Audio")]
 
@@ -74,6 +76,7 @@ public class Plate : MonoBehaviour
 
 
     [Header("Debug")]
+
     float gizmoRayLength = 3f;
 
 
@@ -153,6 +156,7 @@ public class Plate : MonoBehaviour
     }
 
     IEnumerator LightsOn()
+        // enables renderer 2 fixed updates after instantiation (physics was taking a little while ok?)
     {
         yield return new WaitForFixedUpdate();
         yield return new WaitForFixedUpdate();
@@ -160,8 +164,31 @@ public class Plate : MonoBehaviour
         meshRenderer.enabled = true;
     }
 
-     void LaunchPlate()
+    void ScaleForFlight()
+        // resizes the plate HITBOX to the size it should be in flight.
+        // hitbox will be smaller than model, so the plate can sink into the wall a bit.
     {
+        if (sinkAmt < 0 || sinkAmt > 1)
+        {
+            Debug.LogWarning("yooo sinkAmt is the wrong size please please ");
+        }
+
+        Vector3 flightScale = new Vector3(1-sinkAmt, 1, 1-sinkAmt);
+
+        plateCollider.transform.localScale = flightScale;
+
+    }
+
+    void ScaleForGround()
+    // resets the HITBOX scale to 1, 1, 1
+    {
+        plateCollider.transform.localScale = new Vector3(1, 1, 1);
+    }
+   
+    void LaunchPlate()
+    {
+        ScaleForFlight();
+        // resizes so it can sink into wall
 
         rb.AddForce(transform.forward * initialSpeed, ForceMode.Impulse);
         //Debug.Log("Applying impulse? Impulse direciton given is" + Vector3.forward * initialSpeed);
@@ -170,72 +197,18 @@ public class Plate : MonoBehaviour
         launchAudio.start();
 
     }
-
-    private void FixedUpdate()
-    {
-        applyGravity();
-
-        if (!landed) 
-        {
-        RotateWithVelocity();
-        }
-        
-    }
-
-     void RotateWithVelocity()
-        // Plate will always face the direction its going!
-  
-     {
-        transform.rotation = Quaternion.LookRotation(rb.linearVelocity);
-
-     }
-
     public void StopPlate()
-    // I guess this could also be done by changing the amount of friction, but that is scary. Easily changable though
-    // Called by PlateTriggerCollider
+    // own method because idk what if something else needs to call it someday? :pleading:
     {
-
-        //StartCoroutine(StopAfter1Tick());
-
+        ScaleForGround();
+        // resizes so it can be interacted with normally;
+        UnIgnoreInFlightLayers();
+        landed = true;
         rb.isKinematic = true;
         RuntimeManager.AttachInstanceToGameObject(stickAudio, gameObject); // best practice to do this right before playing the audio
         stickAudio.start();
 
     }
-
-    public void EmbedPlate()
-    {
-        rb.linearVelocity = Vector3.zero;
-        rb.isKinematic = true;
-        transform.position += transform.forward * pushAmt;
-
-    }
-
-    private void OnCollisionEnter(Collision other)
-    {
-        //Debug.Log("Collision Enter!");
-
-        if (((interactableLayers & (1 << other.gameObject.layer)) != 0))
-        {
-            if (!landed)
-             {
-                    landed = true;
-                    StopPlate();
-                    Debug.Log("plate shouild stop?");
-            }
-            }
-
-        //if (!landed)
-        //{
-        //    EmbedPlate();
-        //    landed = true;
-        //    UnIgnoreInFlightLayers();
-        //    // player will now be able to jump on the plate
-        //}
-
-
-    }
-
 
     [ContextMenu("Break Plate")]
     void BreakPlate()
@@ -243,15 +216,6 @@ public class Plate : MonoBehaviour
         GameObject.Destroy(gameObject);
         RuntimeManager.AttachInstanceToGameObject(breakAudio, gameObject);
         breakAudio.start();
-    }
-
-    IEnumerator StopAfter1Tick()
-        // stops after 1 fixedupdate.
-    {
-        yield return new WaitForFixedUpdate();
-
-        rb.isKinematic = true;
-
     }
 
     void applyGravity()
@@ -263,5 +227,37 @@ public class Plate : MonoBehaviour
         // physics.gravity is negative, so we use Vector3.up (0, 1, 0)
 
     }
+    void RotateWithVelocity()
+    // Plate will always face the direction its going!
+
+    {
+        transform.rotation = Quaternion.LookRotation(rb.linearVelocity);
+    }
+    private void OnCollisionEnter(Collision other)
+    {
+        //Debug.Log("Collision Enter!");
+
+        if (((layersPlateCanLandOn & (1 << other.gameObject.layer)) != 0))
+        {
+            if (!landed)
+
+            {
+                StopPlate();
+                Debug.Log("plate shouild stop?");
+            }
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        applyGravity();
+
+        if (!landed)
+        {
+            RotateWithVelocity();
+        }
+
+    }
+
 
 }
