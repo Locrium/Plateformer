@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4820280946914882803}
   - component: {fileID: 1229035766914288610}
   - component: {fileID: 6195846725660899040}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Plate Version 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,6 +138,9 @@ MonoBehaviour:
   ignoredLayers:
     serializedVersion: 2
     m_Bits: 512
+  ignoredLayersOnlyInFlight:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!64 &6195846725660899040
 MeshCollider:
   m_ObjectHideFlags: 0

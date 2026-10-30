@@ -1,19 +1,22 @@
 using UnityEngine;
 
-public class PlateCollisionCollider : MonoBehaviour
+public class PlatePlayerCollider : MonoBehaviour
 {
-
     [SerializeField] Plate plate;
 
     [SerializeField] LayerMask ignoredLayers;
 
+    [SerializeField] LayerMask interactableLayers;
+
     void Start()
     {
+        //BuildIgnoredLayers();
+    }
 
-        //Physics.IgnoreLayerCollision(gameObject.layer, 8);
-
+    void BuildIgnoredLayers()
+    {
         for (int i = 0; i < 32; ++i)
-            
+
         {
             // going through each bit of ANY layermask using 10 digit numerals (count up to 31)
 
@@ -26,14 +29,21 @@ public class PlateCollisionCollider : MonoBehaviour
         }
     }
 
-    void Update()
+
+
+    void FixedUpdate()
     {
-        
+        transform.position = plate.transform.position;
+
+
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision other)
     {
-        plate.EmbedPlate();
-        Debug.Log("plate shouild stop?");
+        if (((interactableLayers & (1 << other.gameObject.layer)) != 0))
+        {
+
+
+        }
     }
 }

@@ -19,6 +19,7 @@ public class Plate : MonoBehaviour
 
 
     [Header("References")]
+
     Camera camera;
     // main camera (player orientation)
 
@@ -57,6 +58,8 @@ public class Plate : MonoBehaviour
     [SerializeField] LayerMask ignoredLayersOnlyInFlight;
     // this is for ignoring the player while the plate is being thrown. Once the plate is landed, 
     // layers assigned to this will then no longer be ignored.
+
+    [SerializeField] LayerMask interactableLayers;
 
     [Header("Audio")]
 
@@ -117,8 +120,9 @@ public class Plate : MonoBehaviour
                 // Physics.IgnoreLayerCollision does NOT require bit shifting because of course, it makes so much sense!! :D
             }
 
-            
-                // ok now for these
+
+            if ((ignoredLayersOnlyInFlight & (1 << i)) != 0)
+            // ok now for these
             {
                 Physics.IgnoreLayerCollision(gameObject.layer, i);
             }
@@ -181,12 +185,10 @@ public class Plate : MonoBehaviour
      void RotateWithVelocity()
         // Plate will always face the direction its going!
   
-    {
+     {
         transform.rotation = Quaternion.LookRotation(rb.linearVelocity);
 
-
-
-    }
+     }
 
     public void StopPlate()
     // I guess this could also be done by changing the amount of friction, but that is scary. Easily changable though
@@ -194,6 +196,7 @@ public class Plate : MonoBehaviour
     {
 
         //StartCoroutine(StopAfter1Tick());
+
         rb.isKinematic = true;
         RuntimeManager.AttachInstanceToGameObject(stickAudio, gameObject); // best practice to do this right before playing the audio
         stickAudio.start();
@@ -202,19 +205,35 @@ public class Plate : MonoBehaviour
 
     public void EmbedPlate()
     {
-        RotateWithVelocity();
+        rb.linearVelocity = Vector3.zero;
         rb.isKinematic = true;
-        landed = true;
         transform.position += transform.forward * pushAmt;
-         
+
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision other)
     {
-        EmbedPlate();
+        //Debug.Log("Collision Enter!");
 
-        UnIgnoreInFlightLayers();
-        // player will now be able to jump on the plate
+        if (((interactableLayers & (1 << other.gameObject.layer)) != 0))
+        {
+            if (!landed)
+             {
+                    landed = true;
+                    StopPlate();
+                    Debug.Log("plate shouild stop?");
+            }
+            }
+
+        //if (!landed)
+        //{
+        //    EmbedPlate();
+        //    landed = true;
+        //    UnIgnoreInFlightLayers();
+        //    // player will now be able to jump on the plate
+        //}
+
+
     }
 
 
