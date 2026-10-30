@@ -11,6 +11,10 @@ public class Plate : MonoBehaviour
     // READ ME:
     // plate will only work for plate version 4. Fuck it all. FUck!
 
+    // BUGS:
+    // There's a bug where the plate's angle changes a bit when landing. Don't know where it's coming from
+    // if any big brains wanna try and figure it out....?
+
 
     [Header("References")]
 
