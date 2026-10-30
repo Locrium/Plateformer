@@ -128,7 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 41732488}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -892,7 +892,7 @@ GameObject:
   - component: {fileID: 1262020308}
   - component: {fileID: 1262020307}
   - component: {fileID: 1262020313}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Test Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}

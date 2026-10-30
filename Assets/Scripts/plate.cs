@@ -21,14 +21,14 @@ public class Plate : MonoBehaviour
 
     MeshRenderer meshRenderer;
 
-    [SerializeField] PlateGroundCollider plateCollider;
+    [SerializeField] GameObject plateCollider;
     // the hitbox. We will need to resize it, but it will work just like a component. Can even
     // trigger OnCollisionEnter way up here in the parent!
 
     [Header("Values")]
     float initialSpeed = 12f;
     // Amount of impulse force added to propel plate 
-    // (how hard it is thrown)
+    // (how hared it is thrown)
     
     Vector3 offset = new Vector3 (0.5f, -0.5f, 2);
     // offset the launch location so it isn't coming right out of the player's face
