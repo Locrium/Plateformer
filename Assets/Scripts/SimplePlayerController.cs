@@ -12,8 +12,14 @@ public class SimplePlayerController : MonoBehaviour
     private Vector3 playerVelocity;
     private bool groundedPlayer;
 
+    [Header("Plate")]
+    [SerializeField] GameObject platePrefab;
+    GameObject plateInstance;
+
+
     [Header("Camera")]
-    public Transform cam;
+    Transform cam;
+    // This was public, but need to get it to make player prefab - Jl
 
     [Header("Input Actions")]
     public InputActionReference moveAction;
@@ -22,6 +28,7 @@ public class SimplePlayerController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+        cam = FindAnyObjectByType<Camera>().transform;
     }
 
     private void OnEnable()
@@ -35,6 +42,20 @@ public class SimplePlayerController : MonoBehaviour
     {
         moveAction.action.Disable();
         jumpAction.action.Disable();
+    }
+
+    public void Fire(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            SpawnPlate();
+        }
+
+    }
+    void SpawnPlate()
+    {
+        plateInstance = Instantiate(platePrefab);
+
     }
 
     void Update()

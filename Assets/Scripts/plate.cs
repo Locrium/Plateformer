@@ -69,9 +69,28 @@ public class Plate : MonoBehaviour
     // used only for landing. Player interaction should not use this (when implemented)
     // (WHITELIST)
 
-    float breakTimer = 8.5f;
-    // how long it takes for the plate to break
+    [SerializeField] LayerMask layersCanBreak;
+    // what layers can break a plate by jumping off of it
 
+
+    [Header("Breaking!!")]
+
+    float sittingBreakTimer = 8.5f;
+    // how long it takes for the plate to break when it's just hanging around
+
+    float activeBreakTimer = 3f;
+    // how long it takes for the plate to break once a player has stood on it.
+
+    bool canBreak;
+    // specifically whether it can break when a player is on it;
+
+    float onPlateTimer = 0.1f;
+    // How long in seconds a player has to be on a place before it will break after the player jumps off 
+    // Should be a low value (like .25s). It's goal is to just avoid clipping it causing it to break
+    
+
+    bool playerOnPlate;
+    // whether the player is on plate;
 
     [Header("Audio")]
 
@@ -206,13 +225,13 @@ public class Plate : MonoBehaviour
         RuntimeManager.AttachInstanceToGameObject(launchAudio, gameObject);// best practice to do this right before playing the audio
         launchAudio.start();
 
-        StartCoroutine(TimedBreak());
+        StartCoroutine(TimedBreak(sittingBreakTimer));
 
     }
 
-    IEnumerator TimedBreak()
+    IEnumerator TimedBreak(float timer)
     {
-        yield return new WaitForSeconds(breakTimer);
+        yield return new WaitForSeconds(timer);
         BreakPlate();
 
     }
@@ -259,13 +278,72 @@ public class Plate : MonoBehaviour
         if (((layersPlateCanLandOn & (1 << other.gameObject.layer)) != 0))
         {
             if (!landed)
-
             {
                 StopPlate();
                 Debug.Log("plate shouild stop?");
             }
         }
     }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (((layersCanBreak & (1 << other.gameObject.layer)) != 0))
+        {
+            playerOnPlate = true;
+            //Debug.Log("Setting playerOnPlate to true");
+            StartCoroutine(StandingPlateBreak());
+
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (((layersCanBreak & (1 << other.gameObject.layer)) != 0))
+        {
+            playerOnPlate = false;
+            //Debug.Log("Setting playerOnPlate to false");
+            if (canBreak)
+            {
+                BreakPlate();
+            }
+
+        }
+    }
+    IEnumerator StandingPlateBreak()
+        // Will set canBreak to true if the player is on the plate for onPlateTimer seconds. 
+        // Will also call TimeBreak, to start a break timer when player is standing on the plate for onPlateTimer seconds;
+        // it should NOT trigger if the player is on the plate for LESS than onPlateTimer seconds.
+    {
+
+        int timer = Mathf.RoundToInt(onPlateTimer * 50);
+        // I need the timer to work off of fixed update, so I'm multiplying the seconds
+        // value by 50.
+
+        int i = 0;
+        while (playerOnPlate && i < timer)
+        {
+            yield return new WaitForFixedUpdate();
+            i++;
+        }
+
+        //Debug.Log("coroutine plate timer done");
+        //Debug.Log("i = " + i + " timer = " + timer);
+
+        if (i == timer)
+        {
+            //Debug.Log("Setting canBreak to true");
+            canBreak = true;
+            StartCoroutine(TimedBreak(activeBreakTimer));
+        }
+
+        else
+        {
+            yield return null;
+        }
+    }
+
+    
+
 
     private void FixedUpdate()
     {
