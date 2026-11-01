@@ -29,6 +29,8 @@ public class Plate : MonoBehaviour
     // the hitbox. We will need to resize it, but it will work just like a component. Can even
     // trigger OnCollisionEnter way up here in the parent!
 
+    [SerializeField] PlateAnimator plateAnimator;
+
     [Header("Values")]
     float initialSpeed = 12f;
     // Amount of impulse force added to propel plate 
@@ -66,6 +68,10 @@ public class Plate : MonoBehaviour
     [SerializeField] LayerMask layersPlateCanLandOn;
     // used only for landing. Player interaction should not use this (when implemented)
     // (WHITELIST)
+
+    float breakTimer = 8.5f;
+    // how long it takes for the plate to break
+
 
     [Header("Audio")]
 
@@ -199,6 +205,15 @@ public class Plate : MonoBehaviour
 
         RuntimeManager.AttachInstanceToGameObject(launchAudio, gameObject);// best practice to do this right before playing the audio
         launchAudio.start();
+
+        StartCoroutine(TimedBreak());
+
+    }
+
+    IEnumerator TimedBreak()
+    {
+        yield return new WaitForSeconds(breakTimer);
+        BreakPlate();
 
     }
     public void StopPlate()
