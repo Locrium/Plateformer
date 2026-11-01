@@ -187,7 +187,7 @@ public class Plate : MonoBehaviour
             Debug.LogWarning("yooo sinkAmt is the wrong size please please ");
         }
 
-        Vector3 flightScale = new Vector3(1-sinkAmt, 1, 1-sinkAmt);
+        Vector3 flightScale = new Vector3(1 - sinkAmt, 1, 1 - sinkAmt);
 
         plateCollider.transform.localScale = flightScale;
 
