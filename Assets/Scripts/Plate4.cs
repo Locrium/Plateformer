@@ -20,7 +20,7 @@ public class Plate4 : MonoBehaviour
 
     [Header("References")]
     Camera camera;
-    // main camera (player orientation)
+    // main cam (player orientation)
 
     Rigidbody rb;
 
@@ -82,7 +82,7 @@ public class Plate4 : MonoBehaviour
         StartCoroutine(LightsOn());
 
         camera = FindAnyObjectByType<Camera>();
-        // must be only one camera
+        // must be only one cam
 
         rb = GetComponent<Rigidbody>();
 

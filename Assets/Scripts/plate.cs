@@ -18,8 +18,8 @@ public class Plate : MonoBehaviour
 
     [Header("References")]
 
-    Camera camera;
-    // main camera (player orientation)
+    Camera cam;
+    // main cam (player orientation)
 
     Rigidbody rb;
 
@@ -32,6 +32,7 @@ public class Plate : MonoBehaviour
     [SerializeField] PlateAnimator plateAnimator;
 
     [Header("Values")]
+
     float initialSpeed = 12f;
     // Amount of impulse force added to propel plate 
     // (how hared it is thrown)
@@ -49,29 +50,23 @@ public class Plate : MonoBehaviour
     
     public bool landed = false;
 
-    float pushAmt = 0.2f;
-    // how far the plate gets pushed into the wall
-
     float sinkAmt = 0.2f;
     // this will determine how much to shrink the hitbox, and therefore how far
     // the plate sinks into the wall. 
     // NOTE: Must be between 0 and 1. 0 is sinking halway through, and 1 is not sinking at all.
 
-    [SerializeField] LayerMask ignoredLayers;
-    // completely ignored layers (BLACKLIST)
+    [SerializeField] LayerMask ignoredLayers; // BLACKLIST
+    // completely ignored layers
 
-    [SerializeField] LayerMask ignoredLayersOnlyInFlight;
+    [SerializeField] LayerMask ignoredLayersOnlyInFlight; // BLACKLIST
     // this is for ignoring the player while the plate is being thrown. Once the plate is landed, 
     // layers assigned to this will then no longer be ignored.
-    // (BLACKLIST)
 
-    [SerializeField] LayerMask layersPlateCanLandOn;
+    [SerializeField] LayerMask layersPlateCanLandOn; // WHITELIST
     // used only for landing. Player interaction should not use this (when implemented)
-    // (WHITELIST)
 
-    [SerializeField] LayerMask layersCanBreak;
+    [SerializeField] LayerMask layersCanBreak; // WHITELIST
     // what layers can break a plate by jumping off of it
-
 
     [Header("Breaking!!")]
 
@@ -88,7 +83,6 @@ public class Plate : MonoBehaviour
     // How long in seconds a player has to be on a place before it will break after the player jumps off 
     // Should be a low value (like .25s). It's goal is to just avoid clipping it causing it to break
     
-
     bool playerOnPlate;
     // whether the player is on plate;
 
@@ -103,12 +97,6 @@ public class Plate : MonoBehaviour
     string plateBreakPath = "event:/plate_break_1";
     EventInstance breakAudio;
 
-
-    [Header("Debug")]
-
-    float gizmoRayLength = 3f;
-
-
     void Start()
     {
         meshRenderer = GetComponent<MeshRenderer>();
@@ -116,17 +104,17 @@ public class Plate : MonoBehaviour
 
         StartCoroutine(LightsOn());
 
-        camera = FindAnyObjectByType<Camera>();
-        // must be only one camera
+        cam = FindAnyObjectByType<Camera>();
+        // must be only one cam
 
         rb = GetComponent<Rigidbody>();
 
         rb.linearDamping = dragScale;
 
-        transform.rotation = camera.transform.rotation;
+        transform.rotation = cam.transform.rotation;
 
-        transform.position = camera.transform.position + 
-            (camera.transform.right * offset.x) + (camera.transform.up * offset.y) + (camera.transform.forward * offset.z);
+        transform.position = cam.transform.position + 
+            (cam.transform.right * offset.x) + (cam.transform.up * offset.y) + (cam.transform.forward * offset.z);
         // I know this is a mess, but just adding a vector3 makes it so the vector 3 is in the world space, and not rotated to the player. Multiplying each 
         // player's cardinal direction by each offset value means that the rotation is taken into account. I'm sure there's a smoother way to do this... -J        
 
@@ -174,6 +162,7 @@ public class Plate : MonoBehaviour
         }
 
     }
+
     void LoadAudio()
     {
         launchAudio = RuntimeManager.CreateInstance(plateLaunchPath);
@@ -183,7 +172,6 @@ public class Plate : MonoBehaviour
         breakAudio = RuntimeManager.CreateInstance(plateBreakPath);
 
     }
-
     IEnumerator LightsOn()
         // enables renderer 2 fixed updates after instantiation (physics was taking a little while ok?)
     {
@@ -285,7 +273,6 @@ public class Plate : MonoBehaviour
         }
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
         if (((layersCanBreak & (1 << other.gameObject.layer)) != 0))
@@ -293,9 +280,9 @@ public class Plate : MonoBehaviour
             playerOnPlate = true;
             //Debug.Log("Setting playerOnPlate to true");
             StartCoroutine(StandingPlateBreak());
-
         }
     }
+
     private void OnTriggerExit(Collider other)
     {
         if (((layersCanBreak & (1 << other.gameObject.layer)) != 0))
@@ -306,15 +293,14 @@ public class Plate : MonoBehaviour
             {
                 BreakPlate();
             }
-
         }
     }
+
     IEnumerator StandingPlateBreak()
         // Will set canBreak to true if the player is on the plate for onPlateTimer seconds. 
         // Will also call TimeBreak, to start a break timer when player is standing on the plate for onPlateTimer seconds;
         // it should NOT trigger if the player is on the plate for LESS than onPlateTimer seconds.
     {
-
         int timer = Mathf.RoundToInt(onPlateTimer * 50);
         // I need the timer to work off of fixed update, so I'm multiplying the seconds
         // value by 50.
@@ -341,9 +327,6 @@ public class Plate : MonoBehaviour
             yield return null;
         }
     }
-
-    
-
 
     private void FixedUpdate()
     {
