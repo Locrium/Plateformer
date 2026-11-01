@@ -15,7 +15,6 @@ public class Plate : MonoBehaviour
     // There's a bug where the plate's angle changes a bit when landing. Don't know where it's coming from
     // if any big brains wanna try and figure it out....?
 
-
     [Header("References")]
 
     Camera cam;
@@ -131,7 +130,7 @@ public class Plate : MonoBehaviour
         for (int i = 0; i < 32; ++i)
 
         {
-            // going through each bit of ANY layermask using 10 digit numerals (count up to 31)
+            // going through each bit of ANY layermask using base 10 numerals (count up to 31)
 
             if ((ignoredLayers & (1 << i)) != 0) // bit shift I over cuz weird fencepost thing I can't understand yet
             // if i is within layers
@@ -140,13 +139,11 @@ public class Plate : MonoBehaviour
                 // Physics.IgnoreLayerCollision does NOT require bit shifting because of course, it makes so much sense!! :D
             }
 
-
             if ((ignoredLayersOnlyInFlight & (1 << i)) != 0)
             // ok now for these
             {
                 Physics.IgnoreLayerCollision(gameObject.layer, i);
             }
-
         }
     }
 
@@ -213,7 +210,7 @@ public class Plate : MonoBehaviour
         RuntimeManager.AttachInstanceToGameObject(launchAudio, gameObject);// best practice to do this right before playing the audio
         launchAudio.start();
 
-        StartCoroutine(TimedBreak(sittingBreakTimer));
+        
 
     }
 
@@ -265,6 +262,8 @@ public class Plate : MonoBehaviour
 
         if (((layersPlateCanLandOn & (1 << other.gameObject.layer)) != 0))
         {
+            StartCoroutine(TimedBreak(sittingBreakTimer));
+
             if (!landed)
             {
                 StopPlate();
