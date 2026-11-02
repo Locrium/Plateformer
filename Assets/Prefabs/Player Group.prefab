@@ -450,6 +450,6 @@ MonoBehaviour:
   jumpHeight: 3
   gravityValue: -25
   controller: {fileID: 2028514545113505496}
-  platePrefab: {fileID: 7304510219743073164, guid: 4cd0e78d0cc90f74d8e0d7fd2c6dbc6f, type: 3}
+  platePrefab: {fileID: 2526887288441128451, guid: 49389a0c1f5890b4c83ea876a6defbff, type: 3}
   moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   jumpAction: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
