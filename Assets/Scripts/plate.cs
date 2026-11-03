@@ -69,16 +69,16 @@ public class Plate : MonoBehaviour
 
     [Header("Breaking!!")]
 
-    float sittingBreakTimer = 8.5f;
+    float sittingBreakTimer = 12f;
     // how long it takes for the plate to break when it's just hanging around
 
-    float activeBreakTimer = 3f;
+    float activeBreakTimer = 1.5f;
     // how long it takes for the plate to break once a player has stood on it.
 
     bool canBreak;
     // specifically whether it can break when a player is on it;
 
-    float onPlateTimer = 0.1f;
+    float onPlateTimer = 0.04f;
     // How long in seconds a player has to be on a place before it will break after the player jumps off 
     // Should be a low value (like .25s). It's goal is to just avoid clipping it causing it to break
     
@@ -187,7 +187,7 @@ public class Plate : MonoBehaviour
             Debug.LogWarning("yooo sinkAmt is the wrong size please please ");
         }
 
-        Vector3 flightScale = new Vector3(1-sinkAmt, 1, 1-sinkAmt);
+        Vector3 flightScale = new Vector3(1 - sinkAmt, 1, 1 - sinkAmt);
 
         plateCollider.transform.localScale = flightScale;
 
@@ -276,9 +276,12 @@ public class Plate : MonoBehaviour
     {
         if (((layersCanBreak & (1 << other.gameObject.layer)) != 0))
         {
-            playerOnPlate = true;
-            //Debug.Log("Setting playerOnPlate to true");
-            StartCoroutine(StandingPlateBreak());
+            if (landed)
+            {
+                playerOnPlate = true;
+                //Debug.Log("Setting playerOnPlate to true");
+                StartCoroutine(StandingPlateBreak());
+            }
         }
     }
 
@@ -286,11 +289,14 @@ public class Plate : MonoBehaviour
     {
         if (((layersCanBreak & (1 << other.gameObject.layer)) != 0))
         {
-            playerOnPlate = false;
-            //Debug.Log("Setting playerOnPlate to false");
-            if (canBreak)
+            if (landed)
             {
-                BreakPlate();
+                playerOnPlate = false;
+                //Debug.Log("Setting playerOnPlate to false");
+                if (canBreak)
+                {
+                    BreakPlate();
+                }
             }
         }
     }

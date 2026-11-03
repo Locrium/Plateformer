@@ -5,8 +5,8 @@ using UnityEngine.InputSystem;
 public class SimplePlayerController : MonoBehaviour
 {
     public float playerSpeed = 5.0f;
-    public float jumpHeight = 1.5f;
-    public float gravityValue = -9.81f;
+    public float jumpHeight = 3f;
+    public float gravityValue = -30f;
 
     public CharacterController controller;
     private Vector3 playerVelocity;
