@@ -8,7 +8,6 @@ public class MeatballEnemy : MonoBehaviour
     public Transform target;
     [Min(1)] public int maxHealth = 3;
     [Min(0.1f)] public float detectionRange = 12f;
-    [UnityEngine.Serialization.FormerlySerializedAs("chargeSpeed")]
     [Min(0.1f)] public float moveSpeed = 3f;
     [Header("Contact hop back")]
     [Min(0.1f)] public float retreatDistance = 2f;
@@ -159,6 +158,7 @@ public class MeatballEnemy : MonoBehaviour
         }
         hopStart = body.position;
         hopDestination = destination;
+        direction = Vector3.ProjectOnPlane(destination - hopStart, Vector3.up).normalized;
         hopElapsed = 0f;
         safeTrail.RemoveRange(destinationIndex + 1, safeTrail.Count - destinationIndex - 1);
         state = State.HoppingBack;
@@ -233,7 +233,7 @@ public class MeatballEnemy : MonoBehaviour
 
     void CheckWall(Collision collision)
     {
-        if (state != State.Following && state != State.HoppingBack || collision.collider.GetComponentInParent<MeatballEnemy>() != null) return;
+        if ((state != State.Following && state != State.HoppingBack) || collision.collider.GetComponentInParent<MeatballEnemy>() != null) return;
         foreach (var contact in collision.contacts)
             if (Vector3.Dot(contact.normal, direction) < -0.6f) { Recover("Wall: " + collision.collider.name); break; }
     }
