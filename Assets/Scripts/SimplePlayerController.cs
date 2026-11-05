@@ -52,6 +52,17 @@ public class SimplePlayerController : MonoBehaviour
         }
 
     }
+
+    public void ResetVelocity()
+    {
+        playerVelocity = Vector3.zero;
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        var meatball = hit.collider.GetComponentInParent<MeatballEnemy>();
+        if (meatball != null) meatball.TryHitPlayer(controller);
+    }
     void SpawnPlate()
     {
         plateInstance = Instantiate(platePrefab);
