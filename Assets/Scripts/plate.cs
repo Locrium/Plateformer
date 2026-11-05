@@ -168,6 +168,8 @@ public class Plate : MonoBehaviour
 
         breakAudio = RuntimeManager.CreateInstance(plateBreakPath);
 
+        Debug.Log("Audio Loaded!");
+
     }
     IEnumerator LightsOn()
         // enables renderer 2 fixed updates after instantiation (physics was taking a little while ok?)
